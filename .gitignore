@@ -1,0 +1,17 @@
+# Virtual environment
+.venv/
+
+# Environment variables — never commit this
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Mac system file
+.DS_Store
+
+# Package build artifacts
+preflight.egg-info/
+*.egg-info
