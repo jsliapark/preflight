@@ -23,11 +23,25 @@ class FileChange(BaseModel):
     path: str
     change_type: ChangeType
     hunks: List[Hunk]
+    functions_added: List[str] = []     
+    functions_modified: List[str] = [] 
+    functions_deleted: List[str] = []    
+    classes_added: List[str] = []        
+    classes_modified: List[str] = []     
+    classes_deleted: List[str] = []
+
+class ChangeIntent(str, Enum):
+    FEATURE = "feature"
+    BUGFIX = "bugfix"
+    REFACTOR = "refactor"
+    UNKNOWN = "unknown"
+
 
 # Changeset is what the diff parser produces and what every agent receives as input
 class ChangeSet(BaseModel):
     files: list[FileChange]
     raw_diff: str # full diff string from git
+    intent: ChangeIntent = ChangeIntent.UNKNOWN  # filled in by diff analyzer agent
 
 # --- Review / Output models ---
 class ReviewComment(BaseModel):
