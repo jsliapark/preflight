@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from core.diff_parser import parse_diff
+from agents.diff_analyzer import analyze_diff
 from agents.review_agent import (
     run_correctness_pass,
     run_security_pass,
