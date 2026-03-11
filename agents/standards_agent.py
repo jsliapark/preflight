@@ -22,6 +22,9 @@ def run_standards_pass(changeset: ChangeSet, collection: chromadb.Collection) ->
         ]
     )
 
+    if not response.content:
+        return ReviewResult(comments=[], summary="No response from model.", pass_name="standards")
+
     raw = response.content[0].text.strip()
 
     if raw.startswith("```"):
@@ -29,31 +32,41 @@ def run_standards_pass(changeset: ChangeSet, collection: chromadb.Collection) ->
         end = raw.rfind("```")
         raw = raw[start:end].strip()
 
-    parsed = json.loads(raw)
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return ReviewResult(comments=[], summary="Failed to parse model response.", pass_name="standards")
 
-    comments = [
-        ReviewComment(
+    comments = []
+    for c in parsed.get("comments", []):
+        try:
+            severity = Severity(c["severity"])
+        except ValueError:
+            severity = Severity.WARNING
+        comments.append(ReviewComment(
             file=c["file"],
             line=c.get("line"),
-            severity=Severity(c["severity"]),
+            severity=severity,
             category="standards",
             message=c["message"],
             suggested_fix=c.get("suggested_fix"),
-        )
-        for c in parsed["comments"]
-    ]
+        ))
 
     return ReviewResult(
         comments=comments,
-        summary=parsed["summary"],
+        summary=parsed.get("summary", ""),
         pass_name="standards",
     )
 
 
 def _build_context(changeset: ChangeSet, collection: chromadb.Collection) -> str:
+    count = collection.count()
+    if count == 0:
+        return f"Repo patterns (from merged PRs):\n- No patterns available\n\nDiff to review:\n{changeset.raw_diff}"
+
     similar = collection.query(
         query_texts=[changeset.raw_diff[:2000]],
-        n_results=min(5, collection.count()),
+        n_results=min(5, count),
     )
 
     pattern_lines = []
