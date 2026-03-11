@@ -1,6 +1,5 @@
-import pytest
 from core.diff_parser import parse_diff
-from core.models import ChangeType, Severity
+from core.models import ChangeType
 
 
 # ─────────────────────────────────────────────

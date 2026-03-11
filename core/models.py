@@ -56,3 +56,13 @@ class ReviewResult(BaseModel):
     comments: list[ReviewComment]
     summary: str
     pass_name: str
+
+# --- PR Description / Output models ---
+class PRDescription(BaseModel):
+    title: str
+    summary: str
+    motivation: str
+    approach: str
+    testing_notes: str
+    risks: str
+    todos: str
