@@ -57,6 +57,14 @@ class ReviewResult(BaseModel):
     summary: str
     pass_name: str
 
+# --- Standards Agent models ---
+class RepoPattern(BaseModel):
+    text: str           # the code pattern (naming, structure, error handling, etc.)
+    category: str       # "naming" | "structure" | "error_handling" | "imports" | "other"
+    source_file: str    # file it came from
+    pr_number: int      # PR it was merged in
+    pr_url: str
+
 # --- PR Description / Output models ---
 class PRDescription(BaseModel):
     title: str
