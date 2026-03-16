@@ -36,7 +36,6 @@ def generate_pr_description(changeset: ChangeSet) -> PRDescription:
         motivation=parsed["motivation"],
         approach=parsed["approach"],
         testing_notes=parsed["testing_notes"],
-        risks=parsed["risks"],
         todos=parsed["todos"],
     )
 

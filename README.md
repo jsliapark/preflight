@@ -12,7 +12,7 @@ Preflight analyzes a git diff through 4 focused AI passes — each a separate Cl
 |---|---|---|
 | Diff Analyzer | Extracts function/class changes and classifies intent (feature / bugfix / refactor) | ✅ |
 | Review Agent | 4 passes: Correctness, Security, Style, Performance | ✅ |
-| PR Description Agent | Generates full PR writeup: summary, motivation, approach, testing, risks | ✅ |
+| PR Description Agent | Generates full PR writeup: summary, motivation, approach, testing | ✅ |
 | Standards Agent | Learns your repo's specific patterns via ChromaDB + GitHub API | ✅ |
 
 ## Built With

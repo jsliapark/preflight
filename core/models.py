@@ -72,5 +72,4 @@ class PRDescription(BaseModel):
     motivation: str
     approach: str
     testing_notes: str
-    risks: str
     todos: str

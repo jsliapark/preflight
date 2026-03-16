@@ -11,6 +11,12 @@ Focus ONLY on standards violations — deviations from the repo's established pa
 - Security issues (handled by the security pass)
 - General style opinions not grounded in the repo's own patterns
 
+Important guidelines:
+- Only flag deviations when you see a clear pattern in the provided repo patterns
+- Do NOT invent patterns that aren't evidenced in the examples provided
+- If the repo patterns are sparse or unclear, err on the side of not flagging
+- Focus on consistency with demonstrated patterns, not ideal conventions
+
 Respond in JSON only, no explanation:
 {
   "comments": [

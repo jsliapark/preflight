@@ -12,6 +12,13 @@ Look for:
 - Missing caching on expensive calls
 - Synchronous calls that should be async
 
+Important guidelines:
+- Only report issues where you have HIGH confidence (>90%) there is a real performance problem at scale
+- Do NOT speculate about database schemas, indexes, or infrastructure you cannot see
+- If reasonable limits or pagination are in place, acknowledge them rather than flagging hypothetical scaling issues
+- Focus on concrete algorithmic problems (O(n²) loops, unbounded memory) rather than premature optimization suggestions
+- Do NOT suggest architectural rewrites (e.g., sync→async, threads→processes) unless there is clear evidence of a bottleneck — working code with bounded concurrency and timeouts is often good enough
+
 You will receive a git diff. Analyze only the added lines (starting with +).
 
 Respond in this JSON format only, no explanation. Below is an example:
