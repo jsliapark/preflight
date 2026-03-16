@@ -1,4 +1,6 @@
 import json
+from itertools import islice
+
 from anthropic import Anthropic
 from dotenv import load_dotenv
 import os
@@ -7,6 +9,9 @@ from core.models import ChangeSet, ReviewComment, ReviewResult, Severity
 
 load_dotenv()
 client = Anthropic()
+
+# Maximum number of comments to process from model response
+MAX_COMMENTS = 100
 
 
 def run_standards_pass(changeset: ChangeSet, collection: chromadb.Collection) -> ReviewResult:
@@ -25,31 +30,38 @@ def run_standards_pass(changeset: ChangeSet, collection: chromadb.Collection) ->
     if not response.content:
         return ReviewResult(comments=[], summary="No response from model.", pass_name="standards")
 
-    raw = response.content[0].text.strip()
+    raw_response = response.content[0].text.strip()
 
-    if raw.startswith("```"):
-        start = raw.find("\n") + 1
-        end = raw.rfind("```")
-        raw = raw[start:end].strip()
+    if raw_response.startswith("```"):
+        start = raw_response.find("\n") + 1
+        end = raw_response.rfind("```")
+        raw_response = raw_response[start:end].strip()
 
     try:
-        parsed = json.loads(raw)
+        parsed = json.loads(raw_response)
     except json.JSONDecodeError:
         return ReviewResult(comments=[], summary="Failed to parse model response.", pass_name="standards")
 
     comments = []
-    for c in parsed.get("comments", []):
+    for comment_data in islice(parsed.get("comments", []), MAX_COMMENTS):
+        # Skip comments missing required fields
+        file_path = comment_data.get("file")
+        message = comment_data.get("message")
+        if not file_path or not message:
+            continue
+        
         try:
-            severity = Severity(c["severity"])
+            severity = Severity(comment_data.get("severity", "warning"))
         except ValueError:
             severity = Severity.WARNING
+        
         comments.append(ReviewComment(
-            file=c["file"],
-            line=c.get("line"),
+            file=file_path,
+            line=comment_data.get("line"),
             severity=severity,
             category="standards",
-            message=c["message"],
-            suggested_fix=c.get("suggested_fix"),
+            message=message,
+            suggested_fix=comment_data.get("suggested_fix"),
         ))
 
     return ReviewResult(
@@ -60,17 +72,24 @@ def run_standards_pass(changeset: ChangeSet, collection: chromadb.Collection) ->
 
 
 def _build_context(changeset: ChangeSet, collection: chromadb.Collection) -> str:
-    count = collection.count()
-    if count == 0:
-        return f"Repo patterns (from merged PRs):\n- No patterns available\n\nDiff to review:\n{changeset.raw_diff}"
-
+    """
+    Builds context string with similar patterns from the collection and the diff.
+    
+    Args:
+        changeset: The parsed changeset containing files and diff.
+        collection: ChromaDB collection of code patterns from merged PRs.
+    
+    Returns:
+        Context string combining relevant patterns and the diff for the prompt.
+    """
+    # Query with fixed n_results; ChromaDB handles cases where fewer results exist
     similar = collection.query(
         query_texts=[changeset.raw_diff[:2000]],
-        n_results=min(5, count),
+        n_results=5,
     )
 
     pattern_lines = []
-    if similar and similar["documents"]:
+    if similar and similar["documents"] and similar["documents"][0]:
         for doc in similar["documents"][0]:
             pattern_lines.append(f"- {doc}")
 
