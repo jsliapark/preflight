@@ -32,12 +32,19 @@ def generate_pr_description(changeset: ChangeSet) -> PRDescription:
 
     return PRDescription(
         title=parsed["title"],
-        summary=parsed["summary"],
-        motivation=parsed["motivation"],
-        approach=parsed["approach"],
-        testing_notes=parsed["testing_notes"],
-        todos=parsed["todos"],
+        summary=_to_string(parsed["summary"]),
+        motivation=_to_string(parsed["motivation"]),
+        approach=_to_string(parsed["approach"]),
+        testing_notes=_to_string(parsed["testing_notes"]),
+        todos=_to_string(parsed["todos"]),
     )
+
+
+def _to_string(value) -> str:
+    """Convert a value to string, joining list items with newlines if needed."""
+    if isinstance(value, list):
+        return "\n".join(str(item) for item in value)
+    return str(value)
 
 
 def _build_context(changeset: ChangeSet) -> str:
