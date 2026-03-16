@@ -53,7 +53,7 @@ def load_index() -> chromadb.Collection:
     client = _chroma_client()
     try:
         return client.get_collection(name="repo_patterns")
-    except Exception as e:
+    except chromadb.errors.NotFoundError as e:
         raise RuntimeError("Standards index not found. Run build_index() first.") from e
 
 
