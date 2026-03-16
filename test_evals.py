@@ -164,19 +164,6 @@ def test_pr_description_title_length():
     assert len(result.title) <= 72, f"Title too long: {len(result.title)} chars — '{result.title}'"
     print(f"  title ({len(result.title)} chars): {result.title}")
 
-
-def test_pr_description_security_surfaces_risk():
-    print("\n[eval] PR description surfaces SQL risk...")
-    changeset = analyze_diff(parse_diff(SQL_INJECTION_DIFF))
-    result = generate_pr_description(changeset)
-
-    risks_lower = result.risks.lower()
-    assert any(kw in risks_lower for kw in ("sql", "injection", "query", "input")), (
-        f"Expected risks to mention sql/injection/query/input, got: '{result.risks}'"
-    )
-    print(f"  risks: {result.risks}")
-
-
 if __name__ == "__main__":
     test_security_catches_sql_injection()
     test_security_no_false_positive_clean_code()
@@ -185,4 +172,3 @@ if __name__ == "__main__":
     test_standards_catches_bad_naming()
     test_standards_severity_never_critical()
     test_pr_description_title_length()
-    test_pr_description_security_surfaces_risk()

@@ -51,7 +51,10 @@ def build_index(repo_name: str, token: str, n_prs: int = 50) -> chromadb.Collect
 def load_index() -> chromadb.Collection:
     """Loads the existing local ChromaDB collection (no GitHub API call)."""
     client = _chroma_client()
-    return client.get_collection(name="repo_patterns")
+    try:
+        return client.get_collection(name="repo_patterns")
+    except chromadb.errors.NotFoundError as e:
+        raise RuntimeError("Standards index not found. Run build_index() first.") from e
 
 
 def _extract_patterns(pr) -> list[RepoPattern]:

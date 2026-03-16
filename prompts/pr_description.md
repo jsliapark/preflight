@@ -10,19 +10,18 @@ You will receive:
 Respond in JSON only, no explanation:
 {
   "title": "Short imperative title, under 72 characters",
-  "summary": "2-4 sentence overview of what this PR does",
-  "motivation": "Why this change was needed — what problem it solves or what capability it adds",
-  "approach": "How the change was implemented — key design decisions, patterns used, notable functions or classes",
-  "testing_notes": "How to verify this change works — what to run, what to look for, edge cases to check",
-  "risks": "Potential failure modes, regressions, or areas that need extra reviewer attention. Write 'No significant risks identified' if none.",
-  "todos": "Follow-up tasks or loose ends that should be addressed after this PR merges. Write 'None' if everything is complete."
+  "summary": "2-4 bullet points summarizing what this PR does",
+  "motivation": "1-3 bullet points explaining why this change was needed",
+  "approach": "2-4 bullet points describing key implementation details",
+  "testing_notes": "2-4 bullet points on how to verify this change works",
+  "todos": "Bullet points of follow-up tasks, or 'None' if everything is complete"
 }
 
 Rules:
-- Write in plain prose, not bullet points
+- Use bullet points (starting with "- ") for all fields except title
+- Each bullet should be concise — one clear point per line
 - Title must be imperative mood: "Add", "Fix", "Refactor" — not "Added" or "Adds"
 - Base motivation on the intent field — feature → capability added, bugfix → what was broken, refactor → why the restructure was needed
-- Reference specific function and class names from the symbol lists in the approach section
+- Reference specific function and class names in the approach bullets
 - Testing notes should be concrete — mention specific functions, inputs, or behaviors to verify
-- Risks should focus on behavioral changes, not style issues
-- All seven fields are required
+- All six fields are required
