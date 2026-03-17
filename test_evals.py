@@ -46,18 +46,26 @@ CLEAN_PYTHON_DIFF = """diff --git a/users/service.py b/users/service.py
 """
 
 # ────────N+1 QUERY DIFF─────────────────────────────
-# Violation: DB query inside a loop
+# Violation: Multiple DB queries inside a loop (classic N+1 pattern)
 # ───────────────────────────────────────────────────
 N_PLUS_ONE_DIFF = """diff --git a/reports.py b/reports.py
 --- a/reports.py
 +++ b/reports.py
-@@ -1,0 +1,10 @@
+@@ -1,0 +1,15 @@
 +def get_order_summaries(user_ids):
++    # WARNING: This makes N+1 database calls!
 +    summaries = []
-+    for user_id in user_ids:
++    for user_id in user_ids:  # Iterates over potentially thousands of users
++        user = db.query("SELECT * FROM users WHERE id = %s", (user_id,))
 +        orders = db.query("SELECT * FROM orders WHERE user_id = %s", (user_id,))
++        payments = db.query("SELECT * FROM payments WHERE user_id = %s", (user_id,))
 +        total = sum(o.amount for o in orders)
-+        summaries.append({"user_id": user_id, "total": total})
++        summaries.append({
++            "user_id": user_id,
++            "user_name": user.name,
++            "total": total,
++            "payment_count": len(payments)
++        })
 +    return summaries
 """
 
