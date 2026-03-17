@@ -129,14 +129,14 @@ Options:
 preflight pr --base develop
 
 # Override the generated title
-preflight pr --title "Add user authentication"
+preflight pr --title "feat: Add user authentication"
 
 # Copy to clipboard instead of creating PR
 preflight pr --copy
 ```
 
 When you run `preflight pr`, it will:
-1. Generate a title, summary, motivation, approach, testing notes, and TODOs
+1. Generate a conventional commit title (e.g., `feat:`, `fix:`, `refactor:`), summary, motivation, approach, testing notes, and TODOs
 2. Show a preview panel
 3. Prompt for confirmation
 4. Push your branch and create the PR via `gh pr create`
@@ -212,7 +212,7 @@ Contributions are welcome! To get started:
 2. Create a feature branch (`git checkout -b feature/your-feature`)
 3. Make your changes
 4. Run tests (`pytest`)
-5. Commit your changes (`git commit -m "Add your feature"`)
+5. Commit your changes (`git commit -m "feat: Add your feature"`)
 6. Push to the branch (`git push origin feature/your-feature`)
 7. Open a Pull Request
 

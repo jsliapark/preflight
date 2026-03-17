@@ -53,7 +53,7 @@ BUGFIX_DIFF = """diff --git a/core/auth.py b/core/auth.py
 
 # ────────REFACTOR DIFF────────────────────────────
 # Private helper extracted from existing function — no behavioral change.
-# Expected: risks as "No significant risks identified"
+# Expected: title starts with "refactor:", motivation mentions restructure/cleanup
 # ─────────────────────────────────────────────────
 REFACTOR_DIFF = """diff --git a/core/reports.py b/core/reports.py
 --- a/core/reports.py
@@ -75,7 +75,6 @@ def _print_description(result: PRDescription):
     print(f"  motivation:    {result.motivation}")
     print(f"  approach:      {result.approach}")
     print(f"  testing_notes: {result.testing_notes}")
-    print(f"  risks:         {result.risks}")
     print(f"  todos:         {result.todos}")
 
 
@@ -90,7 +89,6 @@ def test_feature_description():
     assert isinstance(result.motivation, str) and len(result.motivation) > 0
     assert isinstance(result.approach, str) and len(result.approach) > 0
     assert isinstance(result.testing_notes, str) and len(result.testing_notes) > 0
-    assert isinstance(result.risks, str) and len(result.risks) > 0
     assert isinstance(result.todos, str) and len(result.todos) > 0
     assert "pagination" in result.todos.lower()
     assert len(result.title) <= 72
@@ -109,7 +107,6 @@ def test_bugfix_description():
     assert isinstance(result.motivation, str) and len(result.motivation) > 0
     assert isinstance(result.approach, str) and len(result.approach) > 0
     assert isinstance(result.testing_notes, str) and len(result.testing_notes) > 0
-    assert isinstance(result.risks, str) and len(result.risks) > 0
     assert isinstance(result.todos, str) and len(result.todos) > 0
     assert len(result.title) <= 72
 
@@ -127,9 +124,9 @@ def test_refactor_description():
     assert isinstance(result.motivation, str) and len(result.motivation) > 0
     assert isinstance(result.approach, str) and len(result.approach) > 0
     assert isinstance(result.testing_notes, str) and len(result.testing_notes) > 0
-    assert isinstance(result.risks, str) and len(result.risks) > 0
     assert isinstance(result.todos, str) and len(result.todos) > 0
     assert len(result.title) <= 72
+    assert result.title.lower().startswith("refactor:"), f"Expected refactor prefix, got: {result.title}"
 
     _print_description(result)
 
@@ -144,7 +141,6 @@ def test_all_fields_are_strings():
     assert isinstance(result.motivation, str)
     assert isinstance(result.approach, str)
     assert isinstance(result.testing_notes, str)
-    assert isinstance(result.risks, str)
     assert isinstance(result.todos, str)
 
 
