@@ -1,11 +1,7 @@
 import json
-from anthropic import Anthropic
-from dotenv import load_dotenv
 import os
 from core.models import ChangeSet, ChangeIntent, FileChange
-
-load_dotenv()
-client = Anthropic()
+from core.anthropic_client import get_client
 
 
 def analyze_diff(changeset: ChangeSet) -> ChangeSet:
@@ -16,7 +12,7 @@ def analyze_diff(changeset: ChangeSet) -> ChangeSet:
     """
     prompt = _load_prompt("diff_analyzer")
 
-    response = client.messages.create(
+    response = get_client().messages.create(
         model="claude-opus-4-5",
         max_tokens=1024,
         system=prompt,

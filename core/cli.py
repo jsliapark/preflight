@@ -8,7 +8,7 @@ from rich.panel import Panel
 from dotenv import load_dotenv
 
 # Must be called before importing modules that read environment variables (e.g., Anthropic API key)
-load_dotenv()
+load_dotenv(override=True)
 
 from core.diff_parser import parse_diff
 from agents.diff_analyzer import analyze_diff

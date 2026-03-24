@@ -1,18 +1,13 @@
 import os
 import json
-from anthropic import Anthropic
-from dotenv import load_dotenv
 from core.models import ChangeSet, ReviewComment, ReviewResult, Severity
-
-load_dotenv()
-
-client = Anthropic()
+from core.anthropic_client import get_client
 
 def _run_pass(changeset: ChangeSet, prompt_name: str, category: str) -> ReviewResult:
     prompt = _load_prompt(prompt_name)
     diff_content = _format_diff_for_review(changeset)
     
-    response = client.messages.create(
+    response = get_client().messages.create(
         model="claude-opus-4-5",
         max_tokens=1024,
         system=prompt,

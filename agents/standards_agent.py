@@ -1,14 +1,10 @@
 import json
+import os
 from itertools import islice
 
-from anthropic import Anthropic
-from dotenv import load_dotenv
-import os
 import chromadb
 from core.models import ChangeSet, ReviewComment, ReviewResult, Severity
-
-load_dotenv()
-client = Anthropic()
+from core.anthropic_client import get_client
 
 # Maximum number of comments to process from model response
 MAX_COMMENTS = 100
@@ -18,7 +14,7 @@ def run_standards_pass(changeset: ChangeSet, collection: chromadb.Collection) ->
     prompt = _load_prompt("standards_review")
     context = _build_context(changeset, collection)
 
-    response = client.messages.create(
+    response = get_client().messages.create(
         model="claude-opus-4-5",
         max_tokens=1024,
         system=prompt,
