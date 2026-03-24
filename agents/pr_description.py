@@ -1,18 +1,14 @@
 import json
-from anthropic import Anthropic
-from dotenv import load_dotenv
 import os
 from core.models import ChangeSet, PRDescription
-
-load_dotenv()
-client = Anthropic()
+from core.anthropic_client import get_client
 
 
 def generate_pr_description(changeset: ChangeSet) -> PRDescription:
     prompt = _load_prompt("pr_description")
     context = _build_context(changeset)
 
-    response = client.messages.create(
+    response = get_client().messages.create(
         model="claude-opus-4-5",
         max_tokens=2048,
         system=prompt,
