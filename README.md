@@ -1,12 +1,19 @@
 # Preflight
 
+[![PyPI version](https://img.shields.io/pypi/v/preflight-ai.svg)](https://pypi.org/project/preflight-ai/)
+[![Python 3.11+](https://img.shields.io/pypi/pyversions/preflight-ai.svg)](https://pypi.org/project/preflight-ai/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Safety](https://img.shields.io/badge/safety-advisory--only-blue.svg)](SAFETY.md)
+
 Instant senior-level AI code review before you open a PR.
 
 Preflight analyzes your git diff through 4 focused AI review passes—each a separate Claude API call for higher quality than a single giant prompt. Get actionable feedback on correctness, security, style, and performance issues before your code even reaches human reviewers.
 
 ## Features
 
-- **4 Focused Review Passes** — Correctness, Security, Style, and Performance checks run concurrently for fast, thorough analysis
+- **4 Focused Review Passes** — Correctness, Security, Style, and Performance checks
+  run concurrently as separate Claude API calls; each agent focuses on one concern,
+  producing higher-quality findings than a single monolithic prompt.
 - **Smart Diff Analysis** — Automatically extracts modified functions/classes and classifies intent (feature, bugfix, refactor)
 - **PR Description Generation** — Creates complete PR writeups with summary, motivation, approach, and testing notes
 - **Severity-Based Output** — Color-coded findings (critical, warning, suggestion) with specific line references and suggested fixes
@@ -35,22 +42,17 @@ Preflight analyzes your git diff through 4 focused AI review passes—each a sep
 
 ## Installation
 
-1. Clone the repository:
+```bash
+pip install preflight-ai
+```
+
+### Development Installation
+
+To contribute or run from source:
 
 ```bash
-git clone https://github.com/your-username/preflight.git
+git clone https://github.com/jsliapark/preflight.git
 cd preflight
-```
-
-2. Install the package:
-
-```bash
-pip install -e .
-```
-
-For development (includes pytest):
-
-```bash
 pip install -e ".[dev]"
 ```
 
@@ -195,14 +197,65 @@ python test_evals.py
 
 ## Safety & Limitations
 
-Preflight is **advisory only**—it does not block merges or execute any code.
+> ⚠️ Preflight is **advisory only** — it never blocks merges or executes code. See [SAFETY.md](SAFETY.md) for full details.
 
-- Diffs are sent to Anthropic's API; no external storage of your code
-- Large diffs may be truncated to fit context limits
-- The Security pass flags potential hardcoded secrets
-- Standards Agent quality depends on the quality of indexed PRs
+### What Preflight Does NOT Do
+
+- Does not block merges or enforce policy — all findings are suggestions, not verdicts
+- Does not run or execute any of your code
+- Does not store diffs or code on any external server (only your Anthropic API key's usage logs apply)
+- Does not access your codebase beyond the diff you provide
+
+### Sensitive Data
+
+- If a diff contains secrets (API keys, passwords), those will be sent to the Anthropic API
+- The Security pass will flag hardcoded secrets as critical violations
+- Do not use Preflight if your organization prohibits sending code to third-party AI APIs
+
+### Known Limitations
+
+- Diff context is limited to changed lines — agents cannot see full file context
+- Very large diffs (>8k tokens) may be truncated
+- Claude may miss bugs requiring deep runtime context; false positives are possible
+- The Standards Agent needs at least a few merged PRs to build meaningful patterns
 
 See [SAFETY.md](SAFETY.md) for full details.
+
+## Publishing to PyPI
+
+> Requires `build` and `twine`: `pip install build twine`
+
+1. Bump the version in `pyproject.toml`:
+
+```toml
+version = "0.1.x"
+```
+
+2. Build the distribution:
+
+```bash
+python -m build
+```
+
+3. Check the build artifacts:
+
+```bash
+twine check dist/*
+```
+
+4. Upload to PyPI:
+
+```bash
+twine upload dist/*
+```
+
+You'll be prompted for your PyPI username and password (or use an API token — set `__token__` as the username and your token as the password).
+
+To upload to TestPyPI first:
+
+```bash
+twine upload --repository testpypi dist/*
+```
 
 ## Contributing
 
