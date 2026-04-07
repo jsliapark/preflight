@@ -82,17 +82,29 @@ GITHUB_REPO=owner/repo-name
 
 ### Code Review
 
-Run all 4 review passes on your current branch's diff against `main`:
+Run review passes on your current branch's diff against `main`. By default all 4 passes run; use `--only` to target specific ones:
 
 ```bash
 preflight review
 ```
 
-Diff against a different base branch:
+Options:
 
 ```bash
+# Diff against a different base branch
 preflight review --base develop
+
+# Run a single pass
+preflight review --only security
+
+# Run multiple specific passes
+preflight review --only security,correctness
+
+# Combine with a custom base branch
+preflight review --only performance --base develop
 ```
+
+Valid pass names: `correctness`, `security`, `style`, `performance`
 
 Example output:
 
