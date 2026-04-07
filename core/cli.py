@@ -44,6 +44,16 @@ SEVERITY_COLORS = {
 }
 
 
+VALID_PASSES = {"correctness", "security", "style", "performance"}
+
+PASS_FUNCS = {
+    "correctness": run_correctness_pass,
+    "security": run_security_pass,
+    "style": run_style_pass,
+    "performance": run_performance_pass,
+}
+
+
 @click.group()
 def main():
     """Preflight — AI code review before you open a PR."""
@@ -52,10 +62,29 @@ def main():
 
 @main.command()
 @click.option("--base", default="main", help="Base branch to diff against (default: main)")
-def review(base):
-    """Run all review passes on the current branch diff."""
+@click.option(
+    "--only",
+    default=None,
+    help="Comma-separated list of passes to run (e.g. security,correctness). "
+         f"Valid passes: {', '.join(sorted(VALID_PASSES))}",
+)
+def review(base, only):
+    """Run review passes on the current branch diff."""
     _validate_branch_name(base)
-    
+
+    if only is not None:
+        requested = {p.strip().lower() for p in only.split(",")}
+        invalid = requested - VALID_PASSES
+        if invalid:
+            raise click.BadParameter(
+                f"Unknown pass(es): {', '.join(sorted(invalid))}. "
+                f"Valid options: {', '.join(sorted(VALID_PASSES))}",
+                param_hint="'--only'",
+            )
+        selected_passes = requested
+    else:
+        selected_passes = VALID_PASSES
+
     diff = _get_diff(base)
     if diff is None:
         return
@@ -68,17 +97,13 @@ def review(base):
 
     console.print(f"\n[dim]Intent: {changeset.intent.value} · {len(changeset.files)} file(s) changed[/dim]\n")
 
-    # Run all passes concurrently since they are independent
-    pass_funcs = [
-        run_correctness_pass,
-        run_security_pass,
-        run_style_pass,
-        run_performance_pass,
-    ]
+    # Build pass list in canonical order, filtered by --only
+    pass_order = ["correctness", "security", "style", "performance"]
+    pass_funcs = [PASS_FUNCS[name] for name in pass_order if name in selected_passes]
 
     # Execute all passes concurrently and collect results
     with console.status("[bold]Running review passes...[/bold]"):
-        with ThreadPoolExecutor(max_workers=4) as executor:
+        with ThreadPoolExecutor(max_workers=len(pass_funcs)) as executor:
             future_to_func = {executor.submit(pass_func, changeset): pass_func for pass_func in pass_funcs}
             results = []
             for future in as_completed(future_to_func):
