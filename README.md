@@ -87,6 +87,8 @@ Run review passes on your current branch's diff against `main`. By default all 4
 ```bash
 preflight review
 ```
+### Code Review (`preflight review`)
+![preflight review demo](https://github.com/user-attachments/assets/2f7c402b-7886-42a3-8243-48c22388b339)
 
 Options:
 
@@ -103,6 +105,8 @@ preflight review --only security,correctness
 # Combine with a custom base branch
 preflight review --only performance --base develop
 ```
+### `--only` Flag for Targeted Passes
+![preflight --only demo](https://github.com/user-attachments/assets/4a2c383f-2074-4e0d-b07a-66d0fecd3dc3)
 
 Valid pass names: `correctness`, `security`, `style`, `performance`
 
@@ -135,6 +139,8 @@ Generate a PR description and create a PR via GitHub CLI:
 ```bash
 preflight pr
 ```
+### PR Description Generation (`preflight pr`)
+![preflight pr demo](https://github.com/user-attachments/assets/2d63e2e0-71a1-4178-b955-4c79ba388fac)
 
 Options:
 
